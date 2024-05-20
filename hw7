@@ -1,15 +1,83 @@
-// SPDX-License-Identifier: GPL-3.0
+interface:
 
-pragma solidity >=0.8.2 <0.9.0;
+aboba.sol:
 
-contract HomeWork1{
-    uint public VoteCount = 0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
 
-    function vote() public {
-        VoteCount += 1;
-    }
+import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-    function getVoteCount() public view returns (uint) {
-        return VoteCount;
+contract Aboba is ERC20, ERC20Burnable, Ownable, ERC20Permit {
+    constructor(address initialOwner)
+        ERC20("Aboba", "MTK")
+        Ownable(initialOwner)
+        ERC20Permit("Aboba")
+    {}
+
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
     }
 }
+
+????????????????????????????????????????????????????????????????????????????
+hardhat.js:
+
+require("@nomicfoundation/hardhat-toolbox");
+
+/** @type import('hardhat/config').HardhatUserConfig */
+module.exports = {
+  solidity: "0.8.24",
+
+  networks: {
+    localhost : {
+      url:"http:??127.0.0.1:8545",    
+    bsc:{
+      url:"https://bsc-testnet.blockpi.network/v1/rpc/public",
+      chainId: 97,
+      gasPrise: 200000000,
+      accounts: ["0x957D735fFCF44f2176658f7c2bEA1C503eB177Bc"] 
+    }
+  }
+}
+};
+
+
+???????????????????????????????????????????????????????????????????????????????????
+aboba.js:
+
+const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
+const OWNER = "0x957D735fFCF44f2176658f7c2bEA1C503eB177Bc"; 
+module.exports = buildModule("AbobaModule", (m) => {
+  const aboba = m.contract("Aboba");
+  return(aboba);
+});
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+questions:
+1)ERC-20 значительно упростил и унифицировал 
+выпуск токенов в рамках одной сети. Этот 
+стандарт наряду со смарт-контрактами стал 
+универсальным способом создания и 
+монетизации приложений, использующих 
+блокчейн.
+2)transfer используется для того чтобы напрямую 
+перевесмти токены другому пользователю, а
+transferForm для того, чтобы разрешить другому 
+пользователю снятие определенного количества 
+токенов со счета.
+3)allowance необходима для проверки наличия
+достаточного баланса для отправки токенов на 
+другой адрес.
+4)оплата товаров, оплата услуг, цифровые валюты и т.д.
+5)Поскольку токены ERC-20 фактически являются 
+смарт-контрактами, они, несмотря на всю свою 
+эффективность, имеют определенные риски. 
+Например, смарт-контракт не может быть 
+изменен после того, как его инициировали. 
+Также в нем могут оказаться баги и 
+уязвимости.
